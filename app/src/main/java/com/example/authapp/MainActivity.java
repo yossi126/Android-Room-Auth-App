@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.authapp.databinding.ActivityMainBinding;
 import com.example.authapp.entity.Users;
 import com.example.authapp.util.DataViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("UserPref",MODE_PRIVATE);
 
 
-        binding.registerBtn.setOnClickListener(new View.OnClickListener() {
+        binding.registerBtnTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, RegisterActivity.class));
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(email.isEmpty() || password.isEmpty()){
                     Toast.makeText(MainActivity.this,"fill in all bitch",Toast.LENGTH_SHORT).show();
+                    //Snackbar.make(MainActivity.this, R.string.text_label, Snackbar.LENGTH_SHORT).show();
                 }else{
                     dataViewModel.userLoginAuth(email,password).observe(MainActivity.this, new Observer<Users>() {
                         @Override
@@ -60,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent = new Intent(MainActivity.this,HomeActivity.class);
                                 intent.putExtra(USER_NAME,user.getUserName());
                                 intent.putExtra(USER_ID,user.getUserId());
-
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString("UserName",user.getUserName());
                                 editor.putInt("UserId",user.getUserId());
@@ -85,16 +86,11 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.commit();
-        //Log.d("TAG", "onResume: main activity");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        sharedPreferences = getApplicationContext().getSharedPreferences("UserPref",MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.clear();
-//        editor.commit();
         Log.d("TAG", "onDestroy: main activity");
     }
 }

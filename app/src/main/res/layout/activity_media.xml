@@ -27,6 +27,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
+        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         android:id="@+id/bottomNavBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,11 +39,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewMedia"
-        android:layout_width="200dp"
-        android:layout_height="331dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="48dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.482"
@@ -54,7 +55,7 @@
         android:id="@+id/showVideoView"
         android:layout_width="370dp"
         android:layout_height="157dp"
-        android:layout_marginStart="21dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"

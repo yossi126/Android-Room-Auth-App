@@ -48,10 +48,7 @@ public class MediaActivity extends AppCompatActivity implements UserCardAdapter.
     private SharedPreferences sharedPreferences;
     private int userId;
     private String userName;
-    ImageView imageView;
-
-    //
-    UserCardAdapter userCardAdapter;
+    private UserCardAdapter userCardAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +60,6 @@ public class MediaActivity extends AppCompatActivity implements UserCardAdapter.
         dataViewModel = new ViewModelProvider(MediaActivity.this).get(DataViewModel.class);
         sharedPreferences = getApplicationContext().getSharedPreferences("UserPref",MODE_PRIVATE);
         userId = sharedPreferences.getInt("UserId",0);
-//        imageView = findViewById(R.id.removeFromFavoriteIv);
-//        imageView.setVisibility(View.GONE);
-
 
         ActionMenuItemView deleteAllItem= findViewById(R.id.deleteAll);
         deleteAllItem.setVisibility(View.GONE);
@@ -122,35 +116,6 @@ public class MediaActivity extends AppCompatActivity implements UserCardAdapter.
         });
 
 
-
-//        dataViewModel.getAllMedia().observe(MediaActivity.this, new Observer<List<Media>>() {
-//            @Override
-//            public void onChanged(List<Media> media) {
-//
-//                ArrayList arrayList = new ArrayList();
-//                //media = new ArrayList();
-//                for(Media m : media){
-//                    arrayList.add(m.getMediaPath());
-//                }
-//                ArrayAdapter arrayAdapter2 = new ArrayAdapter(MediaActivity.this,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,arrayList);
-//                binding.listViewForObserver.setAdapter(arrayAdapter2);
-//
-//                binding.listViewForObserver.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-//                        Intent intent = new Intent(MediaActivity.this,EditActivity.class);
-//                        intent.putExtra(MEDIA_URI,arrayList.get(position).toString());
-//                        intent.putExtra("media_id",(position+1));
-//                        //intent.putExtra("media_id",media.get(position).getMediaId());
-//                        intent.putExtra("From_Media_Activity",true);
-//                        startActivity(intent);
-//                    }
-//                });
-//            }
-//        });
-
-
-
         // subset not working - later
 
 //        dataViewModel.getMediaPath().observe(MediaActivity.this, new Observer<List<MediaPathColSubset>>() {
@@ -187,9 +152,6 @@ public class MediaActivity extends AppCompatActivity implements UserCardAdapter.
 
     @Override
     public void onAddClick(int position) {
-        //Toast.makeText(MediaActivity.this,"add btn ",Toast.LENGTH_SHORT).show();
-        //Toast.makeText(MediaActivity.this,"add: "+String.valueOf(position),Toast.LENGTH_SHORT).show();
-
         UsersMediaCrossRef usersMediaCrossRef = new UsersMediaCrossRef(userId, position);
         dataViewModel.insertUserMediaCrossRef(usersMediaCrossRef);
     }

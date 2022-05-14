@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.MediaController;
 
 import com.example.authapp.atapter.FavoriteAdapter;
+
 import com.example.authapp.databinding.ActivityFavoriteBinding;
 import com.example.authapp.entity.Media;
 import com.example.authapp.entity.UsersMediaCrossRef;
@@ -35,7 +36,7 @@ public class FavoriteActivity extends AppCompatActivity implements FavoriteAdapt
     private ActivityFavoriteBinding binding;
     private DataViewModel dataViewModel;
     private int userId;
-    private static String userName;
+    private String userName;
     private SharedPreferences sharedPreferences;
     private FavoriteAdapter favoriteAdapter;
 
@@ -134,3 +135,40 @@ public class FavoriteActivity extends AppCompatActivity implements FavoriteAdapt
         mediaController.setAnchorView(binding.favoriteVideoView);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    private void isInFavorite() {
+//        new Thread(new Runnable() {
+//            int userId = HomeActivity.USER_ID_INT;
+//            int mediaId = getIntent().getIntExtra("media_id", 0);
+//
+//            @Override
+//            public void run() {
+//                int isExists = dataViewModel.isExistsUsersMediaCrossRef(userId, mediaId);
+//                if (isExists == 1) {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            binding.addToFavoriteImageVIew.setVisibility(View.GONE);
+//                            binding.deleteFromFavoriteImageVIew.setVisibility(View.VISIBLE);
+//                            //Toast.makeText(EditActivity.this, "user added", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                } else {
+//                    binding.addToFavoriteImageVIew.setVisibility(View.VISIBLE);
+//                    binding.deleteFromFavoriteImageVIew.setVisibility(View.GONE);
+//                }
+//            }
+//        }).start();
+//    }
