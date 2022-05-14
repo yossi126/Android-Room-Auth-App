@@ -6,18 +6,23 @@ import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.MediaController;
 
+import com.example.authapp.atapter.FavoriteAdapter;
 import com.example.authapp.databinding.ActivityFavoriteBinding;
 import com.example.authapp.entity.Media;
+import com.example.authapp.entity.UsersMediaCrossRef;
 import com.example.authapp.entity.relationship.UserWithVideos;
 import com.example.authapp.util.DataViewModel;
 import com.google.android.material.navigation.NavigationBarView;
@@ -25,14 +30,14 @@ import com.google.android.material.navigation.NavigationBarView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoriteActivity extends AppCompatActivity {
+public class FavoriteActivity extends AppCompatActivity implements FavoriteAdapter.OnItemClickListener{
 
     private ActivityFavoriteBinding binding;
     private DataViewModel dataViewModel;
-    private ArrayAdapter arrayAdapter;
     private int userId;
     private static String userName;
     private SharedPreferences sharedPreferences;
+    private FavoriteAdapter favoriteAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,28 +97,13 @@ public class FavoriteActivity extends AppCompatActivity {
 
 
 
+        binding.favoriteRecyclerView.setHasFixedSize(true);
+        binding.favoriteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         dataViewModel.getFavoriteByUser(userId).observe(FavoriteActivity.this, new Observer<UserWithVideos>() {
             @Override
             public void onChanged(UserWithVideos userWithVideos) {
-                ArrayList<Media> mediaArrayList = new ArrayList<>();
-                for (Media vid : userWithVideos.getVideos()){
-                    mediaArrayList.add(vid);
-                }
-                arrayAdapter = new ArrayAdapter(FavoriteActivity.this,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,mediaArrayList);
-                binding.listViewFavorite.setAdapter(arrayAdapter);
-
-                binding.listViewFavorite.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                        Intent intent = new Intent(FavoriteActivity.this,EditActivity.class);
-                        intent.putExtra("from_favorite_activity",true);
-                        intent.putExtra("media_id",mediaArrayList.get(position).getMediaId());
-                        intent.putExtra("media_uri",mediaArrayList.get(position).getMediaPath());
-
-                        startActivity(intent);
-
-                    }
-                });
+                favoriteAdapter= new FavoriteAdapter(userWithVideos.getVideos(),FavoriteActivity.this,dataViewModel,FavoriteActivity.this);
+                binding.favoriteRecyclerView.setAdapter(favoriteAdapter);
             }
         });
 
@@ -124,5 +114,23 @@ public class FavoriteActivity extends AppCompatActivity {
         super.onRestart();
         binding.bottomNavBar.setSelectedItemId(R.id.favorite);
         overridePendingTransition(0, 0);
+    }
+
+    @Override
+    public void onItemClick(String uri) {
+            displayVideo(uri);
+    }
+
+    @Override
+    public void onDeleteClick(int mediaId) {
+        UsersMediaCrossRef usersMediaCrossRef = new UsersMediaCrossRef(userId,mediaId);
+        dataViewModel.removeFavorite(usersMediaCrossRef);
+    }
+
+    public void displayVideo(String uri){
+        binding.favoriteVideoView.setVideoURI(Uri.parse(uri));
+        MediaController mediaController = new MediaController(FavoriteActivity.this);
+        binding.favoriteVideoView.setMediaController(mediaController);
+        mediaController.setAnchorView(binding.favoriteVideoView);
     }
 }

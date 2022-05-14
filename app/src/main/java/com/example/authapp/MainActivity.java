@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.commit();
-        Log.d("TAG", "onResume: main activity");
+        //Log.d("TAG", "onResume: main activity");
     }
 
     @Override

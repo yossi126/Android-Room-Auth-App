@@ -6,6 +6,7 @@ import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,13 +20,19 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 
-//import com.example.authapp.databinding.ActivityHomeBinding;
+
+import com.example.authapp.atapter.UserCardAdapter;
+
+
 import com.example.authapp.databinding.ActivityMediaBinding;
 import com.example.authapp.entity.Media;
+import com.example.authapp.entity.UsersMediaCrossRef;
 import com.example.authapp.subset.MediaPathColSubset;
 import com.example.authapp.util.DataViewModel;
 import com.google.android.material.navigation.NavigationBarView;
@@ -33,7 +40,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MediaActivity extends AppCompatActivity {
+public class MediaActivity extends AppCompatActivity implements UserCardAdapter.OnItemClickListener{
 
     private ActivityMediaBinding binding;
     private DataViewModel dataViewModel;
@@ -41,6 +48,10 @@ public class MediaActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private int userId;
     private String userName;
+    ImageView imageView;
+
+    //
+    UserCardAdapter userCardAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +62,9 @@ public class MediaActivity extends AppCompatActivity {
 
         dataViewModel = new ViewModelProvider(MediaActivity.this).get(DataViewModel.class);
         sharedPreferences = getApplicationContext().getSharedPreferences("UserPref",MODE_PRIVATE);
-
+        userId = sharedPreferences.getInt("UserId",0);
+//        imageView = findViewById(R.id.removeFromFavoriteIv);
+//        imageView.setVisibility(View.GONE);
 
 
         ActionMenuItemView deleteAllItem= findViewById(R.id.deleteAll);
@@ -98,29 +111,43 @@ public class MediaActivity extends AppCompatActivity {
             }
         });
 
+        binding.recyclerViewMedia.setHasFixedSize(true);
+        binding.recyclerViewMedia.setLayoutManager(new LinearLayoutManager(this));
         dataViewModel.getAllMedia().observe(MediaActivity.this, new Observer<List<Media>>() {
             @Override
             public void onChanged(List<Media> media) {
-                ArrayList arrayList = new ArrayList();
-                //media = new ArrayList();
-                for(Media m : media){
-                    arrayList.add(m.getMediaPath());
-                }
-                ArrayAdapter arrayAdapter2 = new ArrayAdapter(MediaActivity.this,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,arrayList);
-                binding.listViewForObserver.setAdapter(arrayAdapter2);
-
-                binding.listViewForObserver.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                        Intent intent = new Intent(MediaActivity.this,EditActivity.class);
-                        intent.putExtra(MEDIA_URI,arrayList.get(position).toString());
-                        intent.putExtra("media_id",(position+1));
-                        intent.putExtra("From_Media_Activity",true);
-                        startActivity(intent);
-                    }
-                });
+                userCardAdapter = new UserCardAdapter(media,MediaActivity.this,dataViewModel,MediaActivity.this);
+                binding.recyclerViewMedia.setAdapter(userCardAdapter);
             }
         });
+
+
+
+//        dataViewModel.getAllMedia().observe(MediaActivity.this, new Observer<List<Media>>() {
+//            @Override
+//            public void onChanged(List<Media> media) {
+//
+//                ArrayList arrayList = new ArrayList();
+//                //media = new ArrayList();
+//                for(Media m : media){
+//                    arrayList.add(m.getMediaPath());
+//                }
+//                ArrayAdapter arrayAdapter2 = new ArrayAdapter(MediaActivity.this,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,arrayList);
+//                binding.listViewForObserver.setAdapter(arrayAdapter2);
+//
+//                binding.listViewForObserver.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+//                        Intent intent = new Intent(MediaActivity.this,EditActivity.class);
+//                        intent.putExtra(MEDIA_URI,arrayList.get(position).toString());
+//                        intent.putExtra("media_id",(position+1));
+//                        //intent.putExtra("media_id",media.get(position).getMediaId());
+//                        intent.putExtra("From_Media_Activity",true);
+//                        startActivity(intent);
+//                    }
+//                });
+//            }
+//        });
 
 
 
@@ -149,5 +176,28 @@ public class MediaActivity extends AppCompatActivity {
         super.onRestart();
         binding.bottomNavBar.setSelectedItemId(R.id.media);
         overridePendingTransition(0, 0);
+    }
+
+    @Override
+    public void onItemClick(String uri) {
+        //Toast.makeText(MediaActivity.this,uri,Toast.LENGTH_SHORT).show();
+        displayVideo(uri);
+    }
+
+
+    @Override
+    public void onAddClick(int position) {
+        //Toast.makeText(MediaActivity.this,"add btn ",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MediaActivity.this,"add: "+String.valueOf(position),Toast.LENGTH_SHORT).show();
+
+        UsersMediaCrossRef usersMediaCrossRef = new UsersMediaCrossRef(userId, position);
+        dataViewModel.insertUserMediaCrossRef(usersMediaCrossRef);
+    }
+
+    public void displayVideo(String uri){
+        binding.showVideoView.setVideoURI(Uri.parse(uri));
+        MediaController mediaController = new MediaController(MediaActivity.this);
+        binding.showVideoView.setMediaController(mediaController);
+        mediaController.setAnchorView(binding.showVideoView);
     }
 }
